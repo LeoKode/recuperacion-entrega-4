@@ -1,0 +1,84 @@
+﻿@page "/checkout"
+@inject OrderState OrderState
+@inject HttpClient HttpClient
+@inject NavigationManager NavigationManager
+
+<div class="top-bar">
+    <!-- Enlace a la página principal con el logo -->
+    <a class="logo" href="">
+        <img src="img/logo.svg" />
+    </a>
+
+    <!-- Enlace de navegación a la página principal -->
+    <NavLink href="" class="nav-tab" Match="NavLinkMatch.All">
+        <img src="img/pizza-slice.svg" />
+        <div>Get Pizza</div>
+    </NavLink>
+
+    <!-- Enlace de navegación a la página de "Mis pedidos" -->
+    <NavLink href="myorders" class="nav-tab">
+        <img src="img/bike.svg" />
+        <div>My Orders</div>
+    </NavLink>
+</div>
+
+<div class="main">
+    <div class="checkout-cols">
+        <div class="checkout-order-details">
+            <!-- Título de la sección de revisión del pedido -->
+            <h4>Review order</h4>
+            <!-- Itera sobre las pizzas en el pedido y muestra los detalles -->
+            @foreach (var pizza in Order.Pizzas)
+            {
+                <p>
+                    <strong>
+                        <!-- Muestra el tamaño, nombre y precio de cada pizza -->
+                        @(pizza.Size)"
+                        @pizza.Special.Name
+                        (£@pizza.GetFormattedTotalPrice())
+                    </strong>
+                </p>
+            }
+
+            <!-- Muestra el precio total del pedido -->
+            <p>
+                <strong>
+                    Total price:
+                    £@Order.GetFormattedTotalPrice()
+                </strong>
+            </p>
+        </div>
+    </div>
+
+    <!-- Botón para realizar el pedido, deshabilitado si se está enviando el pedido -->
+    <button class="checkout-button btn btn-warning" @onclick="PlaceOrder" disabled=@isSubmitting>
+        Place order
+    </button>
+</div>
+
+@code {
+    // Acceso a la orden actual desde el estado de la orden
+    Order Order => OrderState.Order;
+
+    // Variable para controlar el estado de envío del pedido
+    bool isSubmitting;
+
+    // Método asincrónico para realizar el pedido
+    async Task PlaceOrder()
+    {
+        // Indica que el pedido se está enviando
+        isSubmitting = true;
+
+        // Envía el pedido a través de una solicitud HTTP POST
+        var response = await HttpClient.PostAsJsonAsync($"{NavigationManager.BaseUri}orders", OrderState.Order);
+
+        // Lee la respuesta y obtiene el ID del nuevo pedido
+        var newOrderId = await response.Content.ReadFromJsonAsync<int>();
+
+        // Resetea el estado de la orden después de realizar el pedido
+        OrderState.ResetOrder();
+
+        // Navega a la página "Mis pedidos"
+        NavigationManager.NavigateTo("/myorders");
+    }
+}

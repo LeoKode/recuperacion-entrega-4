@@ -3,59 +3,90 @@
 @inject NavigationManager NavigationManager
 @inject OrderState OrderState
 
-<div class="main">
-  <h1>Blazing Pizzas</h1>
-  <ul class="pizza-cards">
-    @if (specials != null)
-    {
-      @foreach (var special in specials)
-      {
-          <li @onclick="@(() => OrderState.ShowConfigurePizzaDialog(special))" style="background-image: url('@special.ImageUrl')">
-          <div class="pizza-info">
-          <span class="title">@special.Name</span>
-          @special.Description
-          <span class="price">@special.GetFormattedBasePrice()</span>
-          </div>
-        </li>
-      }
-    }
-  </ul>
+<div class="top-bar">
+    <!-- Enlace al logo que redirige a la página principal -->
+    <a class="logo" href="">
+        <img src="img/logo.svg" />
+    </a>
+
+    <!-- Enlace de navegación a la página principal -->
+    <NavLink href="" class="nav-tab" Match="NavLinkMatch.All">
+        <img src="img/pizza-slice.svg" />
+        <div>Get Pizza</div>
+    </NavLink>
+
+    <!-- Enlace de navegación a la página de "Mis pedidos" -->
+    <NavLink href="myorders" class="nav-tab">
+        <img src="img/bike.svg" />
+        <div>My Orders</div>
+    </NavLink>
 </div>
 
+<div class="main">
+    <h1>Blazing Pizzas</h1>
+    <ul class="pizza-cards">
+        <!-- Mostrar las pizzas especiales si la lista no es nula -->
+        @if (specials != null)
+        {
+            <!-- Iterar sobre cada pizza especial y mostrar sus detalles -->
+            @foreach (var special in specials)
+            {
+                <!-- Elemento de lista con un evento onclick para configurar la pizza -->
+                <li @onclick="@(() => OrderState.ShowConfigurePizzaDialog(special))" style="background-image: url('@special.ImageUrl')">
+                    <div class="pizza-info">
+                        <!-- Mostrar nombre, descripción y precio de la pizza -->
+                        <span class="title">@special.Name</span>
+                        @special.Description
+                        <span class="price">@special.GetFormattedBasePrice()</span>
+                    </div>
+                </li>
+            }
+        }
+    </ul>
+</div>
+
+<!-- Mostrar el diálogo de configuración de la pizza si es necesario -->
 @if (OrderState.ShowingConfigureDialog)
 {
-    <ConfigurePizzaDialog
-      Pizza="OrderState.ConfiguringPizza"
-      OnCancel="OrderState.CancelConfigurePizzaDialog"
-      OnConfirm="OrderState.ConfirmConfigurePizzaDialog" />
+    <ConfigurePizzaDialog Pizza="OrderState.ConfiguringPizza"
+                          OnCancel="OrderState.CancelConfigurePizzaDialog"
+                          OnConfirm="OrderState.ConfirmConfigurePizzaDialog" />
 }
 
 <div class="sidebar">
+    <!-- Mostrar los detalles del pedido si hay pizzas en el pedido -->
     @if (order.Pizzas.Any())
     {
         <div class="order-contents">
             <h2>Your order</h2>
 
+            <!-- Iterar sobre cada pizza configurada en el pedido -->
             @foreach (var configuredPizza in order.Pizzas)
             {
-              <div class="cart-item">
-                  <a @onclick="@(() => OrderState.RemoveConfiguredPizza(configuredPizza))" class="delete-item">x</a>
-                  <div class="title">@(configuredPizza.Size)" @configuredPizza.Special.Name</div>
-                  <div class="item-price">
-                      @configuredPizza.GetFormattedTotalPrice()
-                  </div>
-              </div>
+                <div class="cart-item">
+                    <!-- Enlace para eliminar la pizza del pedido -->
+                    <a @onclick="@(() => OrderState.RemoveConfiguredPizza(configuredPizza))" class="delete-item">x</a>
+                    <!-- Mostrar el tamaño y nombre de la pizza -->
+                    <div class="title">@(configuredPizza.Size)" @configuredPizza.Special.Name</div>
+                    <!-- Mostrar el precio total de la pizza -->
+                    <div class="item-price">
+                        @configuredPizza.GetFormattedTotalPrice()
+                    </div>
+                </div>
             }
         </div>
     }
     else
     {
+        <!-- Mensaje cuando no hay pizzas en el pedido -->
         <div class="empty-cart">Choose a pizza<br>to get started</div>
     }
 
+    <!-- Mostrar el total del pedido y el botón para ordenar -->
     <div class="order-total @(order.Pizzas.Any() ? "" : "hidden")">
         Total:
         <span class="total-price">@order.GetFormattedTotalPrice()</span>
+        <!-- Enlace al proceso de checkout, deshabilitado si no hay pizzas en el pedido -->
         <a href="checkout" class="@(OrderState.Order.Pizzas.Count == 0 ? "btn btn-warning disabled" : "btn btn-warning")">
             Order >
         </a>
@@ -63,12 +94,16 @@
 </div>
 
 @code {
-  List<PizzaSpecial> specials = new List<PizzaSpecial>();
-  Order order => OrderState.Order;
+    // Lista para almacenar las pizzas especiales
+    List<PizzaSpecial> specials = new List<PizzaSpecial>();
 
-  protected override async Task OnInitializedAsync()
-  {
-      specials = await HttpClient.GetFromJsonAsync<List<PizzaSpecial>>(NavigationManager.BaseUri + "specials");
-  }
+    // Propiedad para acceder a la orden actual desde el estado de la orden
+    Order order => OrderState.Order;
+
+    // Método para inicializar el componente y obtener las pizzas especiales
+    protected override async Task OnInitializedAsync()
+    {
+        // Realiza una solicitud HTTP para obtener las pizzas especiales
+        specials = await HttpClient.GetFromJsonAsync<List<PizzaSpecial>>(NavigationManager.BaseUri + "specials");
+    }
 }
-		

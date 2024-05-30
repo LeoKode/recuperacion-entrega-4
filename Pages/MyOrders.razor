@@ -1,0 +1,81 @@
+﻿@page "/myorders"
+@inject HttpClient HttpClient
+@inject NavigationManager NavigationManager
+
+<!-- Barra superior con enlaces de navegación -->
+<div class="top-bar">
+    <a class="logo" href="">
+        <img src="img/logo.svg" />
+    </a>
+
+    <!-- Enlace a la página principal (Get Pizza) -->
+    <NavLink href="" class="nav-tab" Match="NavLinkMatch.All">
+        <img src="img/pizza-slice.svg" />
+        <div>Get Pizza</div>
+    </NavLink>
+
+    <!-- Enlace a la página de mis órdenes (My Orders) -->
+    <NavLink href="myorders" class="nav-tab">
+        <img src="img/bike.svg" />
+        <div>My Orders</div>
+    </NavLink>
+</div>
+
+<!-- Contenido principal de la página -->
+<div class="main">
+    <!-- Mostrar mensaje de carga mientras se obtienen las órdenes -->
+    @if (ordersWithStatus == null)
+    {
+        <text>Loading...</text>
+    }
+    // Mostrar mensaje si no hay órdenes
+    else if (!ordersWithStatus.Any())
+    {
+    <h2>No orders placed</h2>
+    <a class="btn btn-success" href="">Order some pizza</a>
+    }
+    // Mostrar lista de órdenes si existen -->
+    else
+    {
+    <div class="list-group orders-list">
+        @foreach (var item in ordersWithStatus)
+        {
+            <!-- Detalle de cada orden -->
+            <div class="list-group-item">
+                <div class="col">
+                    <h5>@item.Order.CreatedTime.ToLongDateString()</h5>
+                    Items:
+                    <strong>@item.Order.Pizzas.Count()</strong>;
+                    Total price:
+                    <strong>£@item.Order.GetFormattedTotalPrice()</strong>
+                </div>
+                <div class="col">
+                    Status: <strong>@item.StatusText</strong>
+                </div>
+                <!-- Mostrar botón de seguimiento si la orden no ha sido entregada -->
+                @if (@item.StatusText != "Delivered")
+                {
+                    <div class="col flex-grow-0">
+                        <a href="myorders/" class="btn btn-success">
+                            Track &gt;
+                        </a>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+    }
+</div>
+
+@code {
+    // Lista para almacenar las órdenes con su estado
+    List<OrderWithStatus> ordersWithStatus = new List<OrderWithStatus>();
+
+    // Método llamado cuando se inicializan los parámetros del componente
+    protected override async Task OnParametersSetAsync()
+    {
+        // Obtener la lista de órdenes con su estado desde el servidor
+        ordersWithStatus = await HttpClient.GetFromJsonAsync<List<OrderWithStatus>>(
+            $"{NavigationManager.BaseUri}orders");
+    }
+}
