@@ -31,39 +31,40 @@
     // Mostrar mensaje si no hay órdenes
     else if (!ordersWithStatus.Any())
     {
-    <h2>No orders placed</h2>
-    <a class="btn btn-success" href="">Order some pizza</a>
+        <h2>No orders placed</h2>
+        <a class="btn btn-success" href="">Order some pizza</a>
     }
     // Mostrar lista de órdenes si existen -->
     else
     {
-    <div class="list-group orders-list">
-        @foreach (var item in ordersWithStatus)
-        {
-            <!-- Detalle de cada orden -->
-            <div class="list-group-item">
-                <div class="col">
-                    <h5>@item.Order.CreatedTime.ToLongDateString()</h5>
-                    Items:
-                    <strong>@item.Order.Pizzas.Count()</strong>;
-                    Total price:
-                    <strong>£@item.Order.GetFormattedTotalPrice()</strong>
-                </div>
-                <div class="col">
-                    Status: <strong>@item.StatusText</strong>
-                </div>
-                <!-- Mostrar botón de seguimiento si la orden no ha sido entregada -->
-                @if (@item.StatusText != "Delivered")
-                {
-                    <div class="col flex-grow-0">
-                        <a href="myorders/" class="btn btn-success">
-                            Track &gt;
-                        </a>
+        <div class="list-group orders-list">
+            @foreach (var item in ordersWithStatus)
+            {
+                <!-- Detalle de cada orden -->
+                <div class="list-group-item">
+                    <div class="col">
+                        <h5>@item.Order.CreatedTime.ToLongDateString()</h5>
+                        Items:
+                        <strong>@item.Order.Pizzas.Count()</strong>;
+                        Total price:
+                        <strong>£@item.Order.GetFormattedTotalPrice()</strong>
                     </div>
-                }
-            </div>
-        }
-    </div>
+                    <div class="col">
+                        Status: <strong>@item.StatusText</strong>
+                    </div>
+                    <!-- Mostrar botón de seguimiento si la orden no ha sido entregada -->
+                    @if (@item.StatusText != "Delivered")
+                    {
+                        <div class="col flex-grow-0">
+                            <!-- ver más detalles -->
+                            <a href="myorders/@item.Order.OrderId" class="btn btn-success">
+                                Track &gt;
+                            </a>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
     }
 </div>
 

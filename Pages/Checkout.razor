@@ -78,7 +78,7 @@
         // Resetea el estado de la orden después de realizar el pedido
         OrderState.ResetOrder();
 
-        // Navega a la página "Mis pedidos"
-        NavigationManager.NavigateTo("/myorders");
+        // En el código existente ya se capturaba newOrderId como respuesta a la realización del pedido. Ahora puede usarlo para ir directamente a ese pedido.
+        NavigationManager.NavigateTo($"myorders/{newOrderId}");
     }
 }

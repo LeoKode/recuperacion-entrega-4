@@ -1,0 +1,108 @@
+﻿<!-- Se cambia el parámetro de ruta para que el componente solo acepte enteros -->
+@page "/myorders/{orderId:int}"
+
+<!-- Inyección de dependencias para la navegación y la comunicación HTTP -->
+@inject NavigationManager NavigationManager
+@inject HttpClient HttpClient
+
+<!-- Barra de navegación superior -->
+<div class="top-bar">
+    <!-- Logo de la aplicación -->
+    <a class="logo" href="">
+        <img src="img/logo.svg" />
+    </a>
+
+    <!-- Enlaces de navegación -->
+    <NavLink href="" class="nav-tab" Match="NavLinkMatch.All">
+        <img src="img/pizza-slice.svg" />
+        <div>Get Pizza</div>
+    </NavLink>
+
+    <NavLink href="myorders" class="nav-tab">
+        <img src="img/bike.svg" />
+        <div>My Orders</div>
+    </NavLink>
+</div>
+
+<!-- Contenido principal -->
+<div class="main">
+    <!-- Manejo de diferentes escenarios -->
+    @if (invalidOrder)
+    {
+        <!-- Mensaje de error si no se encuentra la orden -->
+        <h2>Order not found</h2>
+        <p>We're sorry but this order no longer exists.</p>
+    }
+    else if (orderWithStatus == null)
+    {
+        <!-- Visualización del estado de carga mientras se espera la información de la orden -->
+        <div class="track-order">
+            <div class="track-order-title">
+                <h2>
+                    <text>Loading...</text>
+                </h2>
+                <p class="ml-auto mb-0">
+                    ...
+                </p>
+            </div>
+        </div>
+    }
+    else
+    {
+        <!-- Visualización de la orden y su estado -->
+        <div class="track-order">
+            <div class="track-order-title">
+                <!-- Título de la orden y su estado -->
+                <h2>
+                    Order placed @orderWithStatus.Order.CreatedTime.ToLongDateString()
+                </h2>
+                <p class="ml-auto mb-0">
+                    Status: <strong>@orderWithStatus.StatusText</strong>
+                </p>
+            </div>
+            <!-- Detalles de la orden -->
+            <div class="track-order-body">
+                <div class="track-order-details">
+                    <!-- Iteración sobre las pizzas de la orden -->
+                    @foreach (var pizza in orderWithStatus.Order.Pizzas)
+                    {
+                        <!-- Visualización de cada pizza con su tamaño, nombre y precio -->
+                        <p>
+                            <strong>
+                                @(pizza.Size)"
+                                @pizza.Special.Name
+                                (£@pizza.GetFormattedTotalPrice())
+                            </strong>
+                        </p>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    <!-- Definición de parámetros -->
+    [Parameter] public int OrderId { get; set; }
+
+    <!-- Variables de estado -->
+    OrderWithStatus orderWithStatus;
+    bool invalidOrder = false;
+
+    <!-- Método invocado cuando se establecen los parámetros -->
+    protected override async Task OnParametersSetAsync()
+    {
+        try
+        {
+            <!-- Obtener la información de la orden mediante una solicitud HTTP -->
+            orderWithStatus = await HttpClient.GetFromJsonAsync<OrderWithStatus>(
+                $"{NavigationManager.BaseUri}orders/{OrderId}");
+        }
+        catch (Exception ex)
+        {
+            <!-- Manejo de errores si la orden no se encuentra -->
+            invalidOrder = true;
+            Console.Error.WriteLine(ex);
+        }
+    }
+}

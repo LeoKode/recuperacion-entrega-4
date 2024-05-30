@@ -54,4 +54,25 @@ public class OrderController : Controller
         // Devolver el ID de la orden recién creada
         return order.OrderId;
     }
+
+    [HttpGet("{orderId}")]
+    public async Task<ActionResult<OrderWithStatus>> GetOrderWithStatus(int orderId)
+    {
+        // Buscar la orden en la base de datos por su identificador
+        var order = await _db.Orders
+            .Where(o => o.OrderId == orderId)
+            .Include(o => o.Pizzas).ThenInclude(p => p.Special)
+            .Include(o => o.Pizzas).ThenInclude(p => p.Toppings).ThenInclude(t => t.Topping)
+            .SingleOrDefaultAsync();
+
+        // Verificar si la orden no se encontró
+        if (order == null)
+        {
+            return NotFound(); // Devolver un error 404 si la orden no existe
+        }
+
+        // Devolver la orden con su estado
+        return OrderWithStatus.FromOrder(order);
+    }
+
 }
