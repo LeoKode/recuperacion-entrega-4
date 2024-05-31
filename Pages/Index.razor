@@ -3,27 +3,7 @@
 @inject NavigationManager NavigationManager
 @inject OrderState OrderState
 
-<div class="top-bar">
-    <!-- Enlace al logo que redirige a la página principal -->
-    <a class="logo" href="">
-        <img src="img/logo.svg" />
-    </a>
-
-    <!-- Enlace de navegación a la página principal -->
-    <NavLink href="" class="nav-tab" Match="NavLinkMatch.All">
-        <img src="img/pizza-slice.svg" />
-        <div>Get Pizza</div>
-    </NavLink>
-
-    <!-- Enlace de navegación a la página de "Mis pedidos" -->
-    <NavLink href="myorders" class="nav-tab">
-        <img src="img/bike.svg" />
-        <div>My Orders</div>
-    </NavLink>
-</div>
-
 <div class="main">
-    <h1>Blazing Pizzas</h1>
     <ul class="pizza-cards">
         <!-- Mostrar las pizzas especiales si la lista no es nula -->
         @if (specials != null)

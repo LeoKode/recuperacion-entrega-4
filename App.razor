@@ -1,6 +1,7 @@
 ﻿<Router AppAssembly="@typeof(Program).Assembly" PreferExactMatches="@true">
     <Found Context="routeData">
-        <RouteView RouteData="@routeData" />
+        <!--  usar diseño predeterminado para aplicarlo a todas las páginas -->
+        <RouteView RouteData="@routeData" DefaultLayout="typeof(MainLayout)" />
     </Found>
     <NotFound>
         <LayoutView >

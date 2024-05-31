@@ -2,25 +2,6 @@
 @inject HttpClient HttpClient
 @inject NavigationManager NavigationManager
 
-<!-- Barra superior con enlaces de navegación -->
-<div class="top-bar">
-    <a class="logo" href="">
-        <img src="img/logo.svg" />
-    </a>
-
-    <!-- Enlace a la página principal (Get Pizza) -->
-    <NavLink href="" class="nav-tab" Match="NavLinkMatch.All">
-        <img src="img/pizza-slice.svg" />
-        <div>Get Pizza</div>
-    </NavLink>
-
-    <!-- Enlace a la página de mis órdenes (My Orders) -->
-    <NavLink href="myorders" class="nav-tab">
-        <img src="img/bike.svg" />
-        <div>My Orders</div>
-    </NavLink>
-</div>
-
 <!-- Contenido principal de la página -->
 <div class="main">
     <!-- Mostrar mensaje de carga mientras se obtienen las órdenes -->

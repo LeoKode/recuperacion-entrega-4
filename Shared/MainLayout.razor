@@ -1,0 +1,40 @@
+﻿<!-- Este archivo representa el diseño principal de la aplicación Blazor. -->
+
+<!-- Indica que esta clase LayoutComponentBase es la clase base para este componente de diseño. -->
+@inherits LayoutComponentBase
+
+<!-- Inicio del marcado HTML del diseño de la aplicación. -->
+<div id="app">
+
+    <!-- Encabezado de la aplicación que contiene el logotipo y los enlaces de navegación. -->
+    <header class="top-bar">
+        <!-- Enlace al inicio de la aplicación con el logotipo. -->
+        <a class="logo" href="">
+            <img src="img/logo.svg" />
+        </a>
+
+        <!-- Enlace a la página principal de la aplicación. -->
+        <NavLink href="" class="nav-tab" Match="NavLinkMatch.All">
+            <img src="img/pizza-slice.svg" />
+            <div>Get Pizza</div>
+        </NavLink>
+
+        <!-- Enlace a la página de pedidos del usuario. -->
+        <NavLink href="myorders" class="nav-tab">
+            <img src="img/bike.svg" />
+            <div>My Orders</div>
+        </NavLink>
+    </header>
+
+    <!-- Contenedor principal del contenido de la aplicación. -->
+    <div class="content">
+        <!-- Aquí se renderizará el contenido de la página actual. -->
+        @Body
+    </div>
+
+    <!-- Pie de página de la aplicación que muestra el año actual. -->
+    <footer>
+        &copy; Blazing Pizza @DateTime.UtcNow.Year
+    </footer>
+
+</div>
